@@ -75,6 +75,9 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     standard_tag_render[6].load(QString(":/pic/tags/resource/O.svg"));
     standard_tag_render[7].load(QString(":/pic/tags/resource/Bs.svg"));
     standard_tag_render[8].load(QString(":/pic/tags/resource/Bb.svg"));
+    standard_tag_render[9].load(QString(":/pic/tags/resource/3b.svg"));
+    standard_tag_render[10].load(QString(":/pic/tags/resource/4b.svg"));
+    standard_tag_render[11].load(QString(":/pic/tags/resource/5b.svg"));
     // 读取鼠标键盘的数据
     this->setMouseTracking(true);
     this->grabKeyboard();
@@ -459,6 +462,7 @@ void DrawOnPic::loadLabel() {
                 if (stream.atEnd()) break;
                 label.color_id = (int)idx / 9;
                 label.tag_id = (int)idx % 9;
+                std::cout << label.tag_id << std::endl;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
                        >> label.pts[1].rx() >> label.pts[1].ry()
                        >> label.pts[2].rx() >> label.pts[2].ry()
@@ -484,7 +488,7 @@ void DrawOnPic::saveLabel() {
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
         for (const box_t &box: current_label) {
-            stream << (box.color_id * 9 + box.tag_id) << " "
+            stream << (box.tag_id) << " "
                    << box.pts[0].x() << " " << box.pts[0].y() << " "
                    << box.pts[1].x() << " " << box.pts[1].y() << " "
                    << box.pts[2].x() << " " << box.pts[2].y() << " "

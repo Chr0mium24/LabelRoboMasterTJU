@@ -9,6 +9,9 @@
         <file>resource/O.svg</file>
         <file>resource/Bs.svg</file>
         <file>resource/Bb.svg</file>
+        <file>resource/3b.svg</file>
+        <file>resource/4b.svg</file>
+        <file>resource/5b.svg</file>
         <file>resource/Big.svg</file>
         <file>resource/Small.svg</file>
     </qresource>

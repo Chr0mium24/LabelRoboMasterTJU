@@ -72,7 +72,7 @@ private:
 private:
     QString current_file;
 
-    QSvgRenderer standard_tag_render[9];
+    QSvgRenderer standard_tag_render[12];
 
     SmartModel model;
 

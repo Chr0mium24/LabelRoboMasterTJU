@@ -280,7 +280,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>LabelList (双击修改类别或删除)</string>
+     <string>LabelList</string>
     </property>
     <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">

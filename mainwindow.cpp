@@ -139,6 +139,7 @@ void MainWindow::on_fileListHorizontalSlider_rangeChanged(int min, int max) {
 }
 
 void MainWindow::on_interpolateButton_clicked() {
+    return; // 禁用插值功能
     enum InterpolateStatus {
         Idle, Waiting4A, Waiting4B
     };// 三种状态：闲置，准备选择第一个插值点，准备选择第二个插值点

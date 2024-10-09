@@ -462,7 +462,6 @@ void DrawOnPic::loadLabel() {
                 if (stream.atEnd()) break;
                 label.color_id = (int)idx / 9;
                 label.tag_id = (int)idx % 9;
-                std::cout << label.tag_id << std::endl;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
                        >> label.pts[1].rx() >> label.pts[1].ry()
                        >> label.pts[2].rx() >> label.pts[2].ry()

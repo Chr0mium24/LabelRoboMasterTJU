@@ -5,6 +5,12 @@
 #include <iostream>
 #include <QMessageBox>
 
+// alpha和beta用于图片增亮和对比度调整
+double *alpha = nullptr;
+double *beta = nullptr;
+double delta_alpha = 0.2;
+double delta_beta = 5.0;
+
 class IndexQListWidgetItem : public QListWidgetItem {
 public:
     IndexQListWidgetItem(QString name, int index) : QListWidgetItem(name), index(index) {
@@ -33,6 +39,15 @@ MainWindow::~MainWindow() {
 
 void MainWindow::on_openDirectoryPushButton_clicked() {
     ui->label->reset();     // 重置绘图控件
+
+    // 释放alpha和beta
+    if (alpha != nullptr) {
+        delete[] alpha;
+    }
+    if (beta != nullptr) {
+        delete[] beta;
+    }
+
     QStringList image_filter = {"*.jpg", "*.png", "*.jpeg"};    // 支持的图像格式
     QDir dir = QFileDialog::getExistingDirectory(this, "", ".", QFileDialog::ShowDirsOnly);
     ui->fileListWidget->clear();    // 清空文件列表
@@ -47,12 +62,24 @@ void MainWindow::on_openDirectoryPushButton_clicked() {
     ui->fileListHorizontalSlider->setMinimum(1);
     ui->fileListHorizontalSlider->setMaximum(ui->fileListWidget->count());
     ui->fileListHorizontalSlider->setValue(1);
+
+    // 初始化alpha和beta
+    alpha = new double[ui->fileListWidget->count()];
+    for (int i = 0; i < ui->fileListWidget->count(); i++) {
+        alpha[i] = 1.0;
+    }
+    beta = new double[ui->fileListWidget->count()];
+    for (int i = 0; i < ui->fileListWidget->count(); i++) {
+        beta[i] = 0.0;
+    }
 }
 
 void MainWindow::on_fileListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
     if (current == nullptr) return;
     // 修改绘图区的内容
-    ui->label->setCurrentFile(current->text());
+    if (alpha == nullptr || beta == nullptr) ui->label->setCurrentFile(current->text());
+    else ui->label->setCurrentFile(current->text(), alpha[static_cast<IndexQListWidgetItem *>(current)->getIndex()],
+                              beta[static_cast<IndexQListWidgetItem *>(current)->getIndex()]);
     // 更新拖动条位置
     int idx = static_cast<IndexQListWidgetItem *>(current)->getIndex();
     ui->fileListHorizontalSlider->setValue(idx + 1);
@@ -87,7 +114,9 @@ void MainWindow::on_labelListWidget_currentItemChanged(QListWidgetItem *current,
 
 void MainWindow::on_smartPushButton_clicked() {
     // 进行一次自动标注
-    ui->label->smart();
+    int idx = ui->fileListWidget->currentRow();
+    ui->label->smart(alpha[idx], beta[idx]);
+    ui->label->loadImage(alpha[idx], beta[idx]);
 }
 
 void MainWindow::on_smartAllPushButton_clicked() {
@@ -98,6 +127,7 @@ void MainWindow::on_smartAllPushButton_clicked() {
         ui->label->smart();
         // ui->label->setCurrentFile(ui->fileListWidget->item(i)->text());
         ui->label->saveLabel();
+        ui->label->loadImage(alpha[i], beta[i]);
         QCoreApplication::processEvents();
     }
 }
@@ -192,12 +222,34 @@ void MainWindow::on_interpolateButton_clicked() {
     }
 }
 
-void MainWindow::on_upLabelButton_clicked() {
-    int prev_idx = ui->labelListWidget->currentRow() - 1;
-    ui->labelListWidget->setCurrentRow(prev_idx >= 0 ? prev_idx : ui->labelListWidget->count() - 1);
+void MainWindow::on_upAlpha_clicked() {
+    if (ui->fileListWidget->count() == 0) return;
+
+    int idx = ui->fileListWidget->currentRow();
+    alpha[idx] += delta_alpha;
+    ui->label->loadImage(alpha[idx], beta[idx]);
 }
 
-void MainWindow::on_downLabelButton_clicked() {
-    int next_idx = ui->labelListWidget->currentRow() + 1;
-    ui->labelListWidget->setCurrentRow(next_idx < ui->labelListWidget->count() ? next_idx : 0);
+void MainWindow::on_downAlpha_clicked() {
+    if (ui->fileListWidget->count() == 0) return;
+
+    int idx = ui->fileListWidget->currentRow();
+    alpha[idx] -= delta_alpha;
+    ui->label->loadImage(alpha[idx], beta[idx]);
+}
+
+void MainWindow::on_upBeta_clicked() {
+    if (ui->fileListWidget->count() == 0) return;
+
+    int idx = ui->fileListWidget->currentRow();
+    beta[idx] += delta_beta;
+    ui->label->loadImage(alpha[idx], beta[idx]);
+}
+
+void MainWindow::on_downBeta_clicked() {
+    if (ui->fileListWidget->count() == 0) return;
+
+    int idx = ui->fileListWidget->currentRow();
+    beta[idx] -= delta_beta;
+    ui->label->loadImage(alpha[idx], beta[idx]);
 }

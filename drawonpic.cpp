@@ -181,6 +181,8 @@ void DrawOnPic::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DrawOnPic::mouseDoubleClickEvent(QMouseEvent *event){
+    // 使用sdxc改变亮度也可以恢复默认视图，故不再使用双击恢复默认视图
+    return;
     if(event->button() == Qt::RightButton){
         // 右键双击恢复默认视图
         // 偷懒，使用重新加载图像实现上述功能
@@ -328,22 +330,29 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
     }
 }
 
-void DrawOnPic::setCurrentFile(QString file) {
+void DrawOnPic::setCurrentFile(QString file, double alpha, double beta) {
     // 切换标注中的文件
     reset();
     current_file = file;
-    loadImage();
+    loadImage(alpha, beta);
     loadLabel();
     setNormalMode();
 }
 
-void DrawOnPic::loadImage() {
+void DrawOnPic::loadImage(double alpha, double beta) {
     // 加载图片时，需要计算两个QTransform的初值
     // 一个用于缩放图像显示
     // 一个用于将归一化标签坐标变为对应像素坐标
     delete img;
-    img = new QImage();
-    img->load(current_file);
+    // QImage image = QImage(current_file).convertToFormat(QImage::Format_RGB888);
+    // cv::Mat cv_img(image.height(), image.width(), CV_8UC3, image.bits(), image.bytesPerLine());
+    // cv::cvtColor(cv_img, cv_img, cv::COLOR_BGR2RGB);
+    // cv_img.convertTo(cv_img, -1, alpha, beta);
+    // img = new QImage(cv_img.data, cv_img.cols, cv_img.rows, cv_img.step, QImage::Format_RGB888);
+    cv::Mat cv_img = cv::imread(current_file.toStdString());
+    cv::cvtColor(cv_img, cv_img, cv::COLOR_BGR2RGB);
+    cv_img.convertTo(cv_img, -1, alpha, beta);
+    img = new QImage(cv_img.data, cv_img.cols, cv_img.rows, cv_img.step, QImage::Format_RGB888);
     double ratio = std::min((double) QLabel::geometry().width() / img->width(),
                             (double) QLabel::geometry().height() / img->height());
 
@@ -402,12 +411,12 @@ void DrawOnPic::removeBox(QVector<box_t>::iterator box_iter) {
     emit labelChanged(current_label);
 }
 
-void DrawOnPic::smart() {
+void DrawOnPic::smart(double alpha, double beta) {
     // 对当前图片进行一次智能标注。
     if (current_file.isEmpty()) return;
     using namespace std::chrono;
     auto t1 = high_resolution_clock::now(); // 统计运行时间
-    if (!model.run(current_file, current_label)) {
+    if (!model.run(current_file, current_label, alpha, beta)) {
         // 运行失败报错
         QMessageBox::warning(nullptr, "warning", "Cannot run smart!\n"
                                                  "This maybe due to compiling without openvino or a broken model file.\n"

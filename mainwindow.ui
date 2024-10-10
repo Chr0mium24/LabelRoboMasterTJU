@@ -313,22 +313,42 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QPushButton" name="upLabelButton">
+         <widget class="QPushButton" name="upAlpha">
           <property name="text">
-           <string>↑ (W)</string>
+           <string>upA(S)</string>
           </property>
           <property name="shortcut">
-           <string>W</string>
+           <string>S</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="downLabelButton">
+         <widget class="QPushButton" name="upBeta">
           <property name="text">
-           <string>↓ (S)</string>
+           <string>upB(D)</string>
           </property>
           <property name="shortcut">
-           <string>S</string>
+           <string>D</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="downAlpha">
+          <property name="text">
+           <string>downA(X)</string>
+          </property>
+          <property name="shortcut">
+           <string>X</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="downBeta">
+          <property name="text">
+           <string>downB(C)</string>
+          </property>
+          <property name="shortcut">
+           <string>C</string>
           </property>
          </widget>
         </item>

@@ -8,6 +8,8 @@
 #include <QtSvg/QSvgRenderer>
 #include "model.hpp"
 
+#include <opencv2/opencv.hpp>
+
 class DrawOnPic : public QLabel {
 Q_OBJECT
 
@@ -37,9 +39,9 @@ protected:
 
 public slots:
 
-    void setCurrentFile(QString file);
+    void setCurrentFile(QString file, double alpha = 1.0, double beta = 0.0);
 
-    void loadImage();
+    void loadImage(double alpha = 1.0, double beta = 0.0);
 
     void saveLabel();
 
@@ -51,7 +53,7 @@ public slots:
 
     void removeBox(box_t *box);
 
-    void smart();
+    void smart(double alpha = 1.0, double beta = 0.0);
 
     void updateBox();
 

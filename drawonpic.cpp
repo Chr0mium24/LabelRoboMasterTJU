@@ -350,6 +350,10 @@ void DrawOnPic::loadImage(double alpha, double beta) {
     // cv_img.convertTo(cv_img, -1, alpha, beta);
     // img = new QImage(cv_img.data, cv_img.cols, cv_img.rows, cv_img.step, QImage::Format_RGB888);
     cv::Mat cv_img = cv::imread(current_file.toStdString());
+    if (cv_img.empty()) {
+        QMessageBox::warning(nullptr, "warning", ("Cannot open image file: " + current_file.toStdString()).c_str(), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        return;
+    }
     cv::cvtColor(cv_img, cv_img, cv::COLOR_BGR2RGB);
     cv_img.convertTo(cv_img, -1, alpha, beta);
     img = new QImage(cv_img.data, cv_img.cols, cv_img.rows, cv_img.step, QImage::Format_RGB888);
